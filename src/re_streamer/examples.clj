@@ -1,12 +1,12 @@
 (ns re-streamer.examples
   (:require [re-streamer.core :as re-streamer]))
 
-;; state-stream
+;; stateful-stream
 
-;; create state stream with initial value
-(def foo (re-streamer/state-stream 10))
+;; create stateful stream with initial value
+(def foo (re-streamer/stateful-stream 10))
 
-;; subscribe to the state stream
+;; subscribe to the stateful stream
 ((:subscribe! foo) #(println %))
 
 ;; console-output:

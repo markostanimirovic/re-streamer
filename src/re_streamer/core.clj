@@ -1,20 +1,23 @@
 (ns re-streamer.core)
 
-(defn state-stream [initial-value]
-  (let [callbacks (atom [])
-        value (atom initial-value)]
-    {:subscribe! (fn [callback]
-                   (do (swap! callbacks conj callback)
-                       (callback @value)))
-     :emit!      (fn [new-value]
-                   (do (reset! value new-value)
-                       (doseq [callback @callbacks] (callback @value))))}))
+(defn- emit!
+  [state val subs]
+  (do (reset! state val)
+      (doseq [sub @subs] (sub @state))))
+
+(defn stateful-stream [val]
+  (let [subs (atom [])
+        state (atom val)]
+    {:subscribe! (fn [sub]
+                   (do (swap! subs conj sub)
+                       (sub @state)))
+     :emit!      (fn [val]
+                   (emit! state val subs))}))
 
 (defn stream []
-  (let [callbacks (atom [])
-        value (atom nil)]
-    {:subscribe! (fn [callback]
-                   (do (swap! callbacks conj callback)))
-     :emit!      (fn [new-value]
-                   (do (reset! value new-value)
-                       (doseq [callback @callbacks] (callback @value))))}))
+  (let [subs (atom [])
+        state (atom nil)]
+    {:subscribe! (fn [sub]
+                   (swap! subs conj sub))
+     :emit!      (fn [val]
+                   (emit! state val subs))}))
