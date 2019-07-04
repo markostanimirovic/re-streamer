@@ -1,6 +1,6 @@
 # re-streamer
 
-FIXME: description
+Simple Clojure library for reactive programming
 
 ## Installation
 
@@ -30,7 +30,7 @@ FIXME: listing of options this app accepts.
 
 ## License
 
-Copyright © 2019 FIXME
+Copyright © 2019 Marko Stanimirovic
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License 2.0 which is available at
