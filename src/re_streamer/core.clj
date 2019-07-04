@@ -1,23 +1,29 @@
 (ns re-streamer.core)
 
-(defn- emit!
-  [state val subs]
-  (do (reset! state val)
-      (doseq [sub @subs] (sub @state))))
-
-(defn stateful-stream [val]
-  (let [subs (atom [])
-        state (atom val)]
-    {:subscribe! (fn [sub]
-                   (do (swap! subs conj sub)
-                       (sub @state)))
-     :emit!      (fn [val]
-                   (emit! state val subs))}))
+(defn stateful-stream
+  ([] stateful-stream nil)
+  ([val]
+   (let [subs (atom #{})
+         state (atom val)]
+     {:subscribe!   (fn [sub]
+                      (swap! subs conj sub)
+                      (sub @state)
+                      sub)
+      :unsubscribe! (fn [sub]
+                      (swap! subs disj sub)
+                      nil)
+      :emit!        (fn [val]
+                      (reset! state val)
+                      (doseq [sub @subs] (sub @state)))
+      :state        state})))
 
 (defn stream []
-  (let [subs (atom [])
-        state (atom nil)]
+  (let [subs (atom #{})]
     {:subscribe! (fn [sub]
-                   (swap! subs conj sub))
+                   (swap! subs conj sub)
+                   sub)
+     :unsubscribe! (fn [sub]
+                     (swap! subs disj sub)
+                     nil)
      :emit!      (fn [val]
-                   (emit! state val subs))}))
+                   (doseq [sub @subs] (sub val)))}))
