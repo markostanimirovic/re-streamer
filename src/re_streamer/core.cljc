@@ -17,7 +17,8 @@
       :emit!        (fn [val]
                       (reset! state val)
                       (doseq [sub @subs] (sub @state)))
-      :state        state})))
+      :state        state
+      :subs         subs})))
 
 (defn stream []
   (let [subs (atom #{})]
@@ -29,3 +30,9 @@
                      nil)
      :emit!        (fn [val]
                      (doseq [sub @subs] (sub val)))}))
+
+(defn subscriber [stream]
+  (select-keys stream [:subscribe! :unsubscribe! :state]))
+
+(defn emitter [stream]
+  (select-keys stream [:emit!]))
