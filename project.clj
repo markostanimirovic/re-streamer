@@ -5,6 +5,4 @@
             :url  "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [org.clojure/clojurescript "1.10.520"]
-                 [reagent "0.8.1"]]
-  :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}})
+                 [reagent "0.8.1"]])
