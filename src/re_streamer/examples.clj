@@ -7,29 +7,47 @@
 (def foo (re-streamer/stateful-stream 10))
 
 ;; subscribe to the stateful stream
-((:subscribe! foo) #(println %))
+(def sub1 ((:subscribe! foo) #(println %)))
 
-;; console-output:
+;; output:
 ;; 10
 
 ;; emit new value
 ((:emit! foo) 100)
 
-;; console-output:
+;; output:
 ;; 100
 
 ;; add one more subscription
-((:subscribe! foo) #(println (inc %)))
+(def sub2 ((:subscribe! foo) #(println (inc %))))
 
-;; console-output:
+;; output:
 ;; 101
 
 ;; emit new value
 ((:emit! foo) 1000)
 
-;; console-output:
+;; output:
 ;; 1000 (first subscription)
 ;; 1001 (second subscription)
+
+;; remove first subscription
+((:unsubscribe! foo) sub1)
+
+;; emit new value
+((:emit! foo) 10000)
+
+;; output:
+;; 10001 (second subscription)
+
+;; also, you can get a state from stateful stream in any moment
+(println @(:state foo))
+
+;; output:
+;; 10000
+
+;; in the end, remove second subscription in order to reduce memory leaks
+((:unsubscribe! foo) sub2)
 
 ;; stream
 
@@ -37,26 +55,38 @@
 (def bar (re-streamer/stream))
 
 ;; subscribe to the stream
-((:subscribe! bar) #(println (:message %)))
+(def sub3 ((:subscribe! bar) #(println (:message %))))
 
 ;; emit new value
 ((:emit! bar) {:message "World"})
 
-;; console-output:
+;; output:
 ;; World
 
 ;; emit new value
 ((:emit! bar) {:message "Developers"})
 
-;; console-output:
+;; output:
 ;; Developers
 
 ;; add one more subscription
-((:subscribe! bar) #(println (str "Hello " (:message %))))
+(def sub4 ((:subscribe! bar) #(println (str "Hello " (:message %)))))
 
 ;; emit new value
 ((:emit! bar) {:message "Clojure Developers"})
 
-;; console-output:
+;; output:
 ;; Clojure Developers (first subscription)
 ;; Hello Clojure Developers (second subscription)
+
+; remove second subscription
+((:unsubscribe! bar) sub4)
+
+;; emit new value
+((:emit! bar) {:message "Functional Programming"})
+
+;; output:
+;; Functional Programming (first subscription)
+
+;; in the end, remove first subscription in order to reduce memory leaks
+((:unsubscribe! bar) sub3)
