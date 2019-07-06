@@ -3,6 +3,16 @@
             #?(:cljs [reagent.core :as reagent]))
   (:refer-clojure :rename {map c-map filter c-filter}))
 
+;; stream/subscriber operators
+
+(defn map [stream f]
+  (core/subscriber (assoc stream :subscribe! (fn [sub]
+                                               ((:subscribe! stream) (comp sub f))))))
+
+(defn filter [stream f]
+  (core/subscriber (assoc stream :subscribe! (fn [sub]
+                                               ((:subscribe! stream) #(if (f %) (sub %)))))))
+
 ;; stateful-stream/subscriber operators
 
 (defn stateful-map [stream f]
@@ -20,13 +30,3 @@
     (core/subscriber (assoc stream :subscribe! (fn [sub]
                                                  ((:subscribe! stream) #(if (f %) (sub %))))
                                    :state state))))
-
-;; stream/subscriber operators
-
-(defn map [stream f]
-  (core/subscriber (assoc stream :subscribe! (fn [sub]
-                                               ((:subscribe! stream) (comp sub f))))))
-
-(defn filter [stream f]
-  (core/subscriber (assoc stream :subscribe! (fn [sub]
-                                               ((:subscribe! stream) #(if (f %) (sub %)))))))
