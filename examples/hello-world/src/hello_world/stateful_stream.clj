@@ -1,4 +1,4 @@
-(ns hello-world.stateful-stream-example
+(ns hello-world.stateful-stream
   (:require [re-streamer.core :as re-streamer]))
 
 ;; stateful-stream
@@ -48,3 +48,47 @@
 
 ;; in the end, remove second subscription in order to reduce memory leaks
 ((:unsubscribe! foo) sub2)
+
+;; to remove all subscriptions and set state value to nil use flush function
+(def sub3 ((:subscribe! foo) #(println (+ 10 %))))
+
+;; output:
+;; 10010 (note: state is still alive)
+
+(def sub4 ((:subscribe! foo) #(println (+ 100 %))))
+
+;; output
+;; 10100
+
+((:emit! foo) 20)
+
+;; output:
+;; 30 (sub3)
+;; 120 (sub4)
+
+;; let's now flush the stream
+((:flush! foo))
+
+;; check state and subscriptions
+(println @(:state foo))
+
+;; output:
+;; nil
+
+((:emit! foo) 10)
+
+;; output:
+;; (there are no printed values, because there are no subscriptions)
+
+;; so, if you want to remove all subscriptions,
+;; use flush instead of calling unsubscribe function many times
+
+;; first way
+((:unsubscribe! foo) sub3)
+((:unsubscribe! foo) sub4)
+
+;; second way
+((:flush! foo))
+
+;; note: flush! also set state value to nil in addition to removing
+;; all subscriptions
