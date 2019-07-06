@@ -17,8 +17,7 @@
       :emit!        (fn [val]
                       (reset! state val)
                       (doseq [sub @subs] (sub @state)))
-      :state        state
-      :subs         subs})))
+      :state        state})))
 
 (defn stream []
   (let [subs (atom #{})]
