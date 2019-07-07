@@ -1,10 +1,10 @@
 (ns hello-world.stateful-stream
-  (:require [re-streamer.core :as re-streamer]))
+  (:require [re-streamer.stateful-stream :as stateful-stream]))
 
 ;; stateful-stream
 
 ;; create stateful stream with initial value
-(def foo (re-streamer/stateful-stream 10))
+(def foo (stateful-stream/create 10))
 
 ;; subscribe to the stateful stream
 (def sub1 ((:subscribe! foo) #(println %)))
@@ -49,7 +49,7 @@
 ;; in the end, remove second subscription in order to reduce memory leaks
 ((:unsubscribe! foo) sub2)
 
-;; to remove all subscriptions and set state value to nil use flush function
+;; to remove all subscriptions use flush function
 (def sub3 ((:subscribe! foo) #(println (+ 10 %))))
 
 ;; output:
@@ -69,12 +69,7 @@
 ;; let's now flush the stream
 ((:flush! foo))
 
-;; check state and subscriptions
-(println @(:state foo))
-
-;; output:
-;; nil
-
+;; check subscriptions
 ((:emit! foo) 10)
 
 ;; output:
@@ -89,6 +84,3 @@
 
 ;; second way
 ((:flush! foo))
-
-;; note: flush! also set state value to nil in addition to removing
-;; all subscriptions

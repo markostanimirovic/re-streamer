@@ -1,10 +1,10 @@
 (ns hello-world.stream
-  (:require [re-streamer.core :as re-streamer]))
+  (:require [re-streamer.stream :as stream]))
 
 ;; stream
 
 ;; create stream
-(def bar (re-streamer/stream))
+(def bar (stream/create))
 
 ;; subscribe to the stream
 (def sub1 ((:subscribe! bar) #(println (:message %))))
@@ -43,7 +43,7 @@
 ;; in the end, remove first subscription in order to reduce memory leaks
 ((:unsubscribe! bar) sub1)
 
-;; to remove all subscriptions and set state value to nil use flush function
+;; to remove all subscriptions use flush function
 (def sub3 ((:subscribe! bar) #(println (str (:message %) " Really"))))
 
 (def sub4 ((:subscribe! bar) #(println (str (:message %) " in Clojure(Script)"))))

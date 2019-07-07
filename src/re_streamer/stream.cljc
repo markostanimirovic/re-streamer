@@ -2,7 +2,7 @@
   (:require [re-streamer.mappers :as mappers])
   (:refer-clojure :rename {map c-map filter c-filter}))
 
-(defn stream []
+(defn create []
   (let [subs (atom #{})]
     {:subscribe!   (fn [sub]
                      (swap! subs conj sub)
