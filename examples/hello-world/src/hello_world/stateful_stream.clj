@@ -1,9 +1,8 @@
 (ns hello-world.stateful-stream
   (:require [re-streamer.stateful-stream :as stateful-stream]))
 
-;; stateful-stream
-
 ;; create stateful stream with initial value
+;; note: if you don't pass it, initial value will be nil
 (def foo (stateful-stream/create 10))
 
 ;; subscribe to the stateful stream

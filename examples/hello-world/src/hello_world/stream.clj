@@ -1,8 +1,6 @@
 (ns hello-world.stream
   (:require [re-streamer.stream :as stream]))
 
-;; stream
-
 ;; create stream
 (def bar (stream/create))
 
