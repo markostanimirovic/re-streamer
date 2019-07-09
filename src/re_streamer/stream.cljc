@@ -1,5 +1,4 @@
 (ns re-streamer.stream
-  (:require [re-streamer.mappers :as mappers])
   (:refer-clojure :rename {map c-map filter c-filter}))
 
 (defn create []
@@ -19,9 +18,11 @@
 ;; operators
 
 (defn map [stream f]
-  (mappers/->subscriber (assoc stream :subscribe! (fn [sub]
-                                                    ((:subscribe! stream) (comp sub f))))))
+  (-> (assoc stream :subscribe! (fn [sub]
+                                  ((:subscribe! stream) (comp sub f))))
+      (select-keys [:subscribe! :unsubscribe! :flush!])))
 
 (defn filter [stream f]
-  (mappers/->subscriber (assoc stream :subscribe! (fn [sub]
-                                                    ((:subscribe! stream) #(if (f %) (sub %)))))))
+  (-> (assoc stream :subscribe! (fn [sub]
+                                  ((:subscribe! stream) #(if (f %) (sub %)))))
+      (select-keys [:subscribe! :unsubscribe! :flush!])))
