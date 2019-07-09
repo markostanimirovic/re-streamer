@@ -1,5 +1,5 @@
 (defproject org.clojars.stanimirovic/re-streamer "0.2.3"
-  :description "Simple Clojure library for reactive programming"
+  :description "Clojure and ClojureScript Library for Reactive Programming"
   :url "https://github.com/stanimirovic/re-streamer"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
             :url  "https://www.eclipse.org/legal/epl-2.0/"}

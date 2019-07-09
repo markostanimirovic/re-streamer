@@ -1,32 +1,16 @@
-# re-streamer
+# Re-Streamer
 
-Simple Clojure library for reactive programming
-
-## Installation
-
-Download from http://example.com/FIXME.
+Clojure and ClojureScript Library for Reactive Programming
 
 ## Usage
 
-FIXME: explanation
+To use Re-Streamer in your Leiningen project, add this dependency in project.clj:
 
-    $ java -jar re-streamer-0.1.0-standalone.jar [args]
-
-## Options
-
-FIXME: listing of options this app accepts.
+[![Clojars Project](https://img.shields.io/clojars/v/org.clojars.stanimirovic/re-streamer.svg)](https://clojars.org/org.clojars.stanimirovic/re-streamer)
 
 ## Examples
 
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
+Check examples directory in this repository.
 
 ## License
 
