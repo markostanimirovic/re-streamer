@@ -4,12 +4,7 @@
 ;; example 1: map and distinct
 
 (def foo (stateful-stream/create {:bar {:baz 1} :message "Message"}))
-(def mapped-foo1 (stateful-stream/map (stateful-stream/map foo :bar :mapped-foo1)
-                                      (comp inc :baz)
-                                      :mapped-foo1))
-(def mapped-foo2 (stateful-stream/distinct (stateful-stream/map foo :message :mapped-foo2) = :mapped-foo2))
 
-;; or using thread first macro:
 (def mapped-foo1
   (-> foo
       (stateful-stream/map :bar :mapped-foo1)
@@ -55,11 +50,6 @@
 
 (def store (stateful-stream/create initial-state))
 
-(def get-data-params
-  (stateful-stream/distinct
-    (stateful-stream/pluck store [:search :pagination] :get-data-params) = :get-data-params))
-
-;; or using thread first macro:
 (def get-data-params
   (-> store
       (stateful-stream/pluck [:search :pagination] :get-data-params)
