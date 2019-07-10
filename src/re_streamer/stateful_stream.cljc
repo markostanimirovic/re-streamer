@@ -31,9 +31,9 @@
 
 ;; watcher keys generator
 
-(defn- watcher-key []
-  (let [counter (atom 0)]
-    (swap! counter inc)))
+(defonce ^:private watcher-key
+         (let [counter (atom 0)]
+           #(swap! counter inc)))
 
 ;; operators
 
@@ -50,7 +50,8 @@
 
      {:subscribe!   (fn [sub]
                       (swap! subs conj sub)
-                      (sub @state))
+                      (sub @state)
+                      sub)
       :unsubscribe! (fn [sub]
                       (swap! subs disj sub)
                       nil)
@@ -82,7 +83,35 @@
 
      {:subscribe!   (fn [sub]
                       (swap! subs conj sub)
-                      (sub @state))
+                      (sub @state)
+                      sub)
+      :unsubscribe! (fn [sub]
+                      (swap! subs disj sub)
+                      nil)
+      :flush!       (fn []
+                      (reset! subs #{})
+                      nil)
+      :destroy!     (fn []
+                      (remove-watch (:state stream) watcher-key)
+                      (remove-watch state :watch)
+                      nil)
+      :state        state})))
+
+(defn filter
+  ([stream f]
+   (filter stream f (watcher-key)))
+  ([stream f watcher-key]
+   (let [state #?(:cljs    (reagent/atom (if (f @(:state stream)) @(:state stream) nil))
+                  :default (atom (if (f @(:state stream)) @(:state stream) nil)))
+         subs (atom #{})]
+
+     (add-watch (:state stream) watcher-key #(if (f %4) (reset! state %4)))
+     (add-watch state :watch #(doseq [sub @subs] (sub %4)))
+
+     {:subscribe!   (fn [sub]
+                      (swap! subs conj sub)
+                      (if (f @(:state stream)) (sub @state))
+                      sub)
       :unsubscribe! (fn [sub]
                       (swap! subs disj sub)
                       nil)
