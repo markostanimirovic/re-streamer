@@ -1,47 +1,46 @@
 (ns hello-world.stream
   (:require [re-streamer.stream :as stream]))
 
-;; create stream
+;; Create stream
 (def bar (stream/create))
 
-;; subscribe to the stream
+;; Subscribe to the stream
 (def sub1 ((:subscribe! bar) #(println (:message %))))
 
-;; emit new value
+;; Emit new value
 ((:emit! bar) {:message "World"})
 
 ;; output:
 ;; World
 
-;; emit new value
+;; Emit new value
 ((:emit! bar) {:message "Developers"})
 
 ;; output:
 ;; Developers
 
-;; add one more subscription
+;; Add one more subscription
 (def sub2 ((:subscribe! bar) #(println (str "Hello " (:message %)))))
 
-;; emit new value
+;; Emit new value
 ((:emit! bar) {:message "Clojure Developers"})
 
 ;; output:
 ;; Clojure Developers (first subscription)
 ;; Hello Clojure Developers (second subscription)
 
-; remove second subscription
+;; Remove second subscription
 ((:unsubscribe! bar) sub2)
 
-;; emit new value
+;; Emit new value
 ((:emit! bar) {:message "Functional Programming"})
 
 ;; output:
 ;; Functional Programming (first subscription)
 
-;; in the end, remove first subscription in order to reduce memory leaks
+;; Remove first subscription in order to reduce memory leaks
 ((:unsubscribe! bar) sub1)
 
-;; to remove all subscriptions use flush function
 (def sub3 ((:subscribe! bar) #(println (str (:message %) " Really"))))
 
 (def sub4 ((:subscribe! bar) #(println (str (:message %) " in Clojure(Script)"))))
@@ -52,7 +51,9 @@
 ;; Re-Streamer Rocks Really (sub3)
 ;; Re-Streamer Rocks in Clojure(Script) (sub4)
 
-;; let's now flush the stream
+;; To remove all subscriptions use flush function
+
+;; Let's now flush the stream
 ((:flush! bar))
 
 ((:emit! bar) {:message "Reactive Programming"})
@@ -60,12 +61,12 @@
 ;; output:
 ;; (there are no printed values, because there are no subscriptions)
 
-;; so, if you want to remove all subscriptions,
+;; So, if you want to remove all subscriptions,
 ;; use flush instead of calling unsubscribe many times
 
-;; first way
+;; First way
 ((:unsubscribe! bar) sub3)
 ((:unsubscribe! bar) sub4)
 
-;; second way
+;; Second way
 ((:flush! bar))
