@@ -10,7 +10,7 @@ To use Re-Streamer in your Leiningen project, add this dependency in project.clj
 
 ## Examples
 
-Check examples directory in this repository.
+Check examples directory.
 
 ## License
 

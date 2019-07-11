@@ -22,6 +22,9 @@
                                   ((:subscribe! stream) (comp sub f))))
       (select-keys [:subscribe! :unsubscribe! :flush!])))
 
+(defn pluck [stream keys]
+  (map stream #(select-keys % keys)))
+
 (defn filter [stream f]
   (-> (assoc stream :subscribe! (fn [sub]
                                   ((:subscribe! stream) #(if (f %) (sub %)))))
