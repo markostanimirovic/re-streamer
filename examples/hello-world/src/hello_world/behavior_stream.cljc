@@ -1,7 +1,5 @@
 (ns hello-world.behavior-stream
-  (:require [re-streamer.core :as re-streamer]
-            [re-streamer.types :refer [subscribe unsubscribe
-                                       emit flush destroy]])
+  (:require [re-streamer.core :as re-streamer :refer [subscribe unsubscribe destroy emit flush]])
   (:refer-clojure :rename {flush c-flush}))
 
 ;; Create behavior stream with initial value

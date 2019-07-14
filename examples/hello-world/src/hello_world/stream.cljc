@@ -1,10 +1,9 @@
 (ns hello-world.stream
-  (:require [re-streamer.core :as re-streamer]
-            [re-streamer.types :refer [subscribe unsubscribe
-                                       emit flush destroy]])
+  (:require [re-streamer.core :as re-streamer :refer [subscribe unsubscribe destroy emit flush]])
   (:refer-clojure :rename {flush c-flush}))
 
 ;; Create stream
+;; You can pass an initial value to the stream as well
 (def bar (re-streamer/create-stream))
 
 ;; Subscribe to the stream
