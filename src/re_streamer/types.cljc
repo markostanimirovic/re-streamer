@@ -15,9 +15,13 @@
 (defrecord Stream [subs state])
 
 (defonce ^:private stream-subscriber-impl
-         {:subscribe   (fn [this sub] (swap! (:subs this) conj sub))
-          :unsubscribe (fn [this sub] (swap! (:subs this) disj sub))
-          :destroy     (fn [this] (remove-watch (:state this) :state-watcher))})
+         {:subscribe   (fn [this sub]
+                         (swap! (:subs this) conj sub)
+                         sub)
+          :unsubscribe (fn [this sub]
+                         (swap! (:subs this) disj sub))
+          :destroy     (fn [this]
+                         (remove-watch (:state this) :state-watcher))})
 
 (defonce ^:private emitter-impl
          {:emit  (fn [this val] (reset! (:state this) val))
@@ -39,7 +43,8 @@
          (assoc stream-subscriber-impl
            :subscribe (fn [this sub]
                         (swap! (:subs this) conj sub)
-                        (sub @(:state this)))))
+                        (sub @(:state this))
+                        sub)))
 
 (extend BehaviorStream
   Subscribable
@@ -90,7 +95,8 @@
            :subscribe (fn [this sub]
                         (swap! (:subs this) conj sub)
                         (if ((:filter this) @(:state (:parent this)))
-                          (sub @(:state this))))))
+                          (sub @(:state this)))
+                        sub)))
 
 (extend BehaviorFilteredSubscriber
   Subscribable
