@@ -1,51 +1,54 @@
 (ns hello-world.stream
-  (:require [re-streamer.stream :as stream]))
+  (:require [re-streamer.core :as re-streamer]
+            [re-streamer.types :refer [subscribe unsubscribe
+                                       emit flush destroy]])
+  (:refer-clojure :rename {flush c-flush}))
 
 ;; Create stream
-(def bar (stream/create))
+(def bar (re-streamer/create-stream))
 
 ;; Subscribe to the stream
-(def sub1 ((:subscribe! bar) #(println (:message %))))
+(def sub1 (subscribe bar #(println (:message %))))
 
 ;; Emit new value
-((:emit! bar) {:message "World"})
+(emit bar {:message "World"})
 
 ;; output:
 ;; World
 
 ;; Emit new value
-((:emit! bar) {:message "Developers"})
+(emit bar {:message "Developers"})
 
 ;; output:
 ;; Developers
 
 ;; Add one more subscription
-(def sub2 ((:subscribe! bar) #(println (str "Hello " (:message %)))))
+(def sub2 (subscribe bar #(println (str "Hello " (:message %)))))
 
 ;; Emit new value
-((:emit! bar) {:message "Clojure Developers"})
+(emit bar {:message "Clojure Developers"})
 
 ;; output:
 ;; Clojure Developers (first subscription)
 ;; Hello Clojure Developers (second subscription)
 
 ;; Remove second subscription
-((:unsubscribe! bar) sub2)
+(unsubscribe bar sub2)
 
 ;; Emit new value
-((:emit! bar) {:message "Functional Programming"})
+(emit bar {:message "Functional Programming"})
 
 ;; output:
 ;; Functional Programming (first subscription)
 
 ;; Remove first subscription in order to reduce memory leaks
-((:unsubscribe! bar) sub1)
+(unsubscribe bar sub1)
 
-(def sub3 ((:subscribe! bar) #(println (str (:message %) " Really"))))
+;; Subscribe to the stream to more times
+(def sub3 (subscribe bar #(println (str (:message %) " Really"))))
+(def sub4 (subscribe bar #(println (str (:message %) " in Clojure(Script)"))))
 
-(def sub4 ((:subscribe! bar) #(println (str (:message %) " in Clojure(Script)"))))
-
-((:emit! bar) {:message "Re-Streamer Rocks"})
+(emit bar {:message "Re-Streamer Rocks"})
 
 ;; output:
 ;; Re-Streamer Rocks Really (sub3)
@@ -54,9 +57,9 @@
 ;; To remove all subscriptions use flush function
 
 ;; Let's now flush the stream
-((:flush! bar))
+(flush bar)
 
-((:emit! bar) {:message "Reactive Programming"})
+(emit bar {:message "Reactive Programming"})
 
 ;; output:
 ;; (there are no printed values, because there are no subscriptions)
@@ -65,8 +68,12 @@
 ;; use flush instead of calling unsubscribe many times
 
 ;; First way
-((:unsubscribe! bar) sub3)
-((:unsubscribe! bar) sub4)
+(unsubscribe bar sub3)
+(unsubscribe bar sub4)
 
 ;; Second way
-((:flush! bar))
+(flush bar)
+
+;; Stream is still alive
+;; To destroy it, use destroy function
+(destroy bar)
