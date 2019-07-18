@@ -2,110 +2,67 @@
   #?(:cljs (:require [reagent.core :as reagent]))
   (:refer-clojure :rename {map c-map distinct c-distinct filter c-filter flush c-flush}))
 
-;; === types ===
-
-(defprotocol Subscribable
-  (subscribe [this sub])
-  (unsubscribe [this sub])
-  (destroy [this]))
+;; === Types ===
 
 (defprotocol Emitable
   (emit [this val])
   (flush [this]))
 
-;; === Stream ===
+;; === Streams ===
 
 (defrecord Stream [subs state])
 
-(defonce ^:private stream-subscriber-impl
-         {:subscribe   (fn [this sub]
-                         (swap! (:subs this) conj sub)
-                         sub)
-          :unsubscribe (fn [this sub] (swap! (:subs this) disj sub))
-          :destroy     (fn [this] (remove-watch (:state this) :state-watcher))})
-
-(defonce ^:private emitter-impl
-         {:emit  (fn [this val] (reset! (:state this) val))
-          :flush (fn [this] (reset! (:subs this) #{}))})
-
-(extend Stream
-  Subscribable
-  stream-subscriber-impl
+(extend-type Stream
   Emitable
-  emitter-impl)
-
-(derive Stream ::subscriber)
-
-;; === BehaviorStream ===
+  (emit [this val] (reset! (:state this) val))
+  (flush [this] (reset! (:subs this) #{})))
 
 (defrecord BehaviorStream [subs state])
 
-(defonce ^:private behavior-stream-subscriber-impl
-         (assoc stream-subscriber-impl
-           :subscribe (fn [this sub]
-                        (swap! (:subs this) conj sub)
-                        (sub @(:state this))
-                        sub)))
-
-(extend BehaviorStream
-  Subscribable
-  behavior-stream-subscriber-impl
+(extend-type BehaviorStream
   Emitable
-  emitter-impl)
+  (emit [this val] (reset! (:state this) val))
+  (flush [this] (reset! (:subs this) #{})))
 
-(derive BehaviorStream ::behavior-subscriber)
-
-;; === Subscriber ===
+;; === Subscribers ===
 
 (defrecord Subscriber [subs state parent])
 
-(defonce ^:private subscriber-impl
-         (assoc stream-subscriber-impl
-           :destroy (fn [this]
-                      (remove-watch (:state this) :state-watcher)
-                      (remove-watch (:state (:parent this)) (:watcher-key (:parent this))))))
-
-(extend Subscriber
-  Subscribable
-  subscriber-impl)
-
-(derive Subscriber ::subscriber)
-
-;; === BehaviorSubscriber ===
-
 (defrecord BehaviorSubscriber [subs state parent])
-
-(defonce ^:private behavior-subscriber-impl
-         (assoc behavior-stream-subscriber-impl
-           :destroy (fn [this]
-                      (remove-watch (:state this) :state-watcher)
-                      (remove-watch (:state (:parent this)) (:watcher-key (:parent this))))))
-
-(extend BehaviorSubscriber
-  Subscribable
-  behavior-subscriber-impl)
-
-(derive BehaviorSubscriber ::behavior-subscriber)
-
-;; === BehaviorFilteredSubscriber ===
 
 (defrecord BehaviorFilteredSubscriber [subs state parent filter])
 
-(defonce ^:private behavior-filtered-subscriber-impl
-         (assoc behavior-subscriber-impl
-           :subscribe (fn [this sub]
-                        (swap! (:subs this) conj sub)
-                        (if ((:filter this) @(:state (:parent this)))
-                          (sub @(:state this)))
-                        sub)))
+;; === Subscribable Methods ===
 
-(extend BehaviorFilteredSubscriber
-  Subscribable
-  behavior-filtered-subscriber-impl)
+(defn unsubscribe [this sub] (swap! (:subs this) disj sub))
 
-(derive BehaviorFilteredSubscriber ::behavior-subscriber)
+(defmulti subscribe (fn [this _] (type this)))
 
-;; === factories ===
+(defmethod subscribe (or Stream Subscriber) [this sub]
+  (swap! (:subs this) conj sub)
+  sub)
+
+(defmethod subscribe (or BehaviorStream BehaviorSubscriber) [this sub]
+  (swap! (:subs this) conj sub)
+  (sub @(:state this))
+  sub)
+
+(defmethod subscribe BehaviorFilteredSubscriber [this sub]
+  (swap! (:subs this) conj sub)
+  (if ((:filter this) @(:state (:parent this)))
+    (sub @(:state this)))
+  sub)
+
+(defmulti destroy (fn [this] (type this)))
+
+(defmethod destroy (or Stream BehaviorStream) [this]
+  (remove-watch (:state this) :state-watcher))
+
+(defmethod destroy (or Subscriber BehaviorSubscriber BehaviorFilteredSubscriber) [this]
+  (remove-watch (:state this) :state-watcher)
+  (remove-watch (:state (:parent this)) (:watcher-key (:parent this))))
+
+;; === Stream Factories ===
 
 (defn create-stream
   ([] (create-stream nil))
@@ -128,6 +85,18 @@
 
      (->BehaviorStream subs state))))
 
+;; === Subscriber Factories ===
+
+(derive Stream ::subscriber)
+
+(derive BehaviorStream ::behavior-subscriber)
+
+(derive Subscriber ::subscriber)
+
+(derive BehaviorSubscriber ::behavior-subscriber)
+
+(derive BehaviorFilteredSubscriber ::behavior-subscriber)
+
 (defmulti create-subscriber (fn [stream _ _ _] (type stream)))
 
 (defmethod create-subscriber ::subscriber [stream watcher-key subs state]
@@ -144,13 +113,13 @@
 (defmethod create-filtered-subscriber ::behavior-subscriber [stream filter watcher-key subs state]
   (->BehaviorFilteredSubscriber subs state {:state (:state stream) :watcher-key watcher-key} filter))
 
-;; === watcher keys generator ===
+;; === Watcher Keys Generator ===
 
 (defonce ^:private watcher-key
          (let [counter (atom 0)]
            #(swap! counter inc)))
 
-;; === operators ===
+;; === Operators ===
 
 (defn map
   ([stream f]
