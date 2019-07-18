@@ -38,14 +38,26 @@
 
 (defmulti subscribe (fn [this _] (type this)))
 
-(defmethod subscribe (or Stream Subscriber) [this sub]
+(defn- stream-subscribe [this sub]
   (swap! (:subs this) conj sub)
   sub)
 
-(defmethod subscribe (or BehaviorStream BehaviorSubscriber) [this sub]
+(defmethod subscribe Stream [this sub]
+  (stream-subscribe this sub))
+
+(defmethod subscribe Subscriber [this sub]
+  (stream-subscribe this sub))
+
+(defn- behavior-stream-subscribe [this sub]
   (swap! (:subs this) conj sub)
   (sub @(:state this))
   sub)
+
+(defmethod subscribe BehaviorStream [this sub]
+  (behavior-stream-subscribe this sub))
+
+(defmethod subscribe BehaviorSubscriber [this sub]
+  (behavior-stream-subscribe this sub))
 
 (defmethod subscribe BehaviorFilteredSubscriber [this sub]
   (swap! (:subs this) conj sub)
@@ -55,12 +67,28 @@
 
 (defmulti destroy (fn [this] (type this)))
 
-(defmethod destroy (or Stream BehaviorStream) [this]
+(defn- stream-destroy [this]
   (remove-watch (:state this) :state-watcher))
 
-(defmethod destroy (or Subscriber BehaviorSubscriber BehaviorFilteredSubscriber) [this]
+(defmethod destroy Stream [this]
+  (stream-destroy this))
+
+(defmethod destroy BehaviorStream [this]
+  (stream-destroy this))
+
+(defn- subscriber-destroy [this]
   (remove-watch (:state this) :state-watcher)
   (remove-watch (:state (:parent this)) (:watcher-key (:parent this))))
+
+
+(defmethod destroy Subscriber [this]
+  (subscriber-destroy this))
+
+(defmethod destroy BehaviorSubscriber [this]
+  (subscriber-destroy this))
+
+(defmethod destroy BehaviorFilteredSubscriber [this]
+  (subscriber-destroy this))
 
 ;; === Stream Factories ===
 
