@@ -1,18 +1,34 @@
 (ns reagent-example.core
-    (:require
-      [reagent.core :as r]))
+  (:require [clojure.string :refer [includes?]]
+            [reagent.core :as r]
+            [re-streamer.core :as re-streamer :refer [subscribe unsubscribe destroy emit flush]])
+  (:refer-clojure :rename {flush c-flush}))
 
-;; -------------------------
-;; Views
+(def fruits ["apple" "pineapple" "orange" "blueberry"])
+(def initial-state {:search "" :fruits []})
+(def store (re-streamer/create-behavior-stream initial-state))
+(def search (-> store
+                (re-streamer/map :search)
+                (re-streamer/distinct =)))
 
-(defn home-page []
-  [:div [:h2 "Welcome to Reagent"]])
+(defn filter-fruits [search fruits]
+  (filter #(includes? % search) fruits))
 
-;; -------------------------
-;; Initialize app
+(subscribe search #(emit store (assoc @(:state store) :fruits (filter-fruits % fruits))))
+
+(defn update-search [search]
+  (emit store (assoc @(:state store) :search search)))
+
+(defn app []
+  [:div
+   [:h3 "Reactive Approach"]
+   [:input {:on-change #(update-search (.. % -target -value))}]
+   [:ul
+    (for [fruit (:fruits @(:state store))]
+      ^{:key fruit} [:li fruit])]])
 
 (defn mount-root []
-  (r/render [home-page] (.getElementById js/document "app")))
+  (r/render [app] (.getElementById js/document "app")))
 
 (defn init! []
   (mount-root))
