@@ -4,31 +4,45 @@
             [re-streamer.core :as re-streamer :refer [subscribe unsubscribe destroy emit flush]])
   (:refer-clojure :rename {flush c-flush}))
 
-(def fruits ["apple" "pineapple" "orange" "blueberry"])
-(def initial-state {:search "" :fruits []})
-(def store (re-streamer/create-behavior-stream initial-state))
-(def search (-> store
-                (re-streamer/map :search)
-                (re-streamer/distinct =)))
+(defn fruits-resource []
+  (let [data ["apple" "pineapple" "orange" "blueberry" "cherry"]]
+    {:fetch-fruits (fn [search]
+                     (filter #(includes? % search) data))}))
 
-(defn filter-fruits [search fruits]
-  (filter #(includes? % search) fruits))
+(defn fruits-facade-factory []
+  (let [initial-state {:search "" :fruits []}
+        store (re-streamer/create-behavior-stream initial-state)
 
-(subscribe search #(emit store (assoc @(:state store) :fruits (filter-fruits % fruits))))
+        fruits (re-streamer/map store :fruits)
+        search (-> store
+                   (re-streamer/map :search)
+                   (re-streamer/distinct =))
 
-(defn update-search [search]
-  (emit store (assoc @(:state store) :search search)))
+        resource (fruits-resource)
+        fetch-fruits (:fetch-fruits resource)]
 
-(defn app []
-  [:div
-   [:h3 "Reactive Approach"]
-   [:input {:on-change #(update-search (.. % -target -value))}]
-   [:ul
-    (for [fruit (:fruits @(:state store))]
-      ^{:key fruit} [:li fruit])]])
+    (subscribe search #(emit store (assoc @(:state store)
+                                     :fruits (fetch-fruits %))))
+
+    {:fruits        (:state fruits)
+     :update-search (fn [e]
+                      (emit store (assoc @(:state store)
+                                    :search (.. e -target -value))))}))
+
+(defonce fruits-facade (fruits-facade-factory))
+
+(defn fruits-component []
+  (let [facade fruits-facade
+        fruits (:fruits facade)
+        update-search (:update-search facade)]
+    [:div
+     [:h3 "Fruits"]
+     [:input {:on-change #(update-search %)}]
+     [:ul (for [fruit @fruits]
+            ^{:key fruit} [:li fruit])]]))
 
 (defn mount-root []
-  (r/render [app] (.getElementById js/document "app")))
+  (r/render [fruits-component] (.getElementById js/document "app")))
 
 (defn init! []
   (mount-root))
