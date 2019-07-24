@@ -4,7 +4,7 @@
 
 ;; Basic usage of map operator
 
-(def post (re-streamer/create-behavior-stream {:title "Re-Streamer" :message "Reactive Programming Library"}))
+(def post (re-streamer/behavior-stream {:title "Re-Streamer" :message "Reactive Programming Library"}))
 (def title (re-streamer/map post :title))
 (def message (re-streamer/map post :message))
 

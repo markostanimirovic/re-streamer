@@ -5,7 +5,7 @@
 ;; Let's assume that you want to implement Router for REST API
 
 ;; First, you need to create a router
-(def router (re-streamer/create-stream))
+(def router (re-streamer/stream))
 
 ;; Define musician controller
 (def musician-ctrl (-> router

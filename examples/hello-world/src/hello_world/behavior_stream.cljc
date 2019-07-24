@@ -4,7 +4,7 @@
 
 ;; Create behavior stream with initial value
 ;; If you don't pass it, initial value will be nil
-(def foo (re-streamer/create-behavior-stream 10))
+(def foo (re-streamer/behavior-stream 10))
 
 ;; Subscribe to the behavior stream
 (def sub1 (subscribe foo #(println %)))

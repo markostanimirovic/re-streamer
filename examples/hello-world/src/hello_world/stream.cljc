@@ -4,7 +4,7 @@
 
 ;; Create stream
 ;; You can pass an initial value to the stream as well
-(def bar (re-streamer/create-stream))
+(def bar (re-streamer/stream))
 
 ;; Subscribe to the stream
 (def sub1 (subscribe bar #(println (:message %))))

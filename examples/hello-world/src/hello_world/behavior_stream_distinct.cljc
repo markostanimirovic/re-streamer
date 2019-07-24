@@ -4,7 +4,7 @@
 
 ;; Basic usage of distinct operator
 
-(def login-form (re-streamer/create-behavior-stream {:username "stanimirovic" :password "secret"}))
+(def login-form (re-streamer/behavior-stream {:username "stanimirovic" :password "secret"}))
 (def login-action (re-streamer/distinct login-form =))
 
 (subscribe login-action #(println (str "Logging user with credentials: " %)))

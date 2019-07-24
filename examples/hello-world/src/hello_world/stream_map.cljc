@@ -4,7 +4,7 @@
 
 ;; Basic usage of map operator
 
-(def musicians (re-streamer/create-stream))
+(def musicians (re-streamer/stream))
 (def guitarists (re-streamer/map musicians :guitarists))
 
 (subscribe musicians #(println (str "musicians: " %)))

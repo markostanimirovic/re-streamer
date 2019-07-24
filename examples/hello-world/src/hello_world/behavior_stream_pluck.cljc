@@ -4,9 +4,9 @@
 
 ;; Basic usage of pluck operator
 
-(def panel (re-streamer/create-behavior-stream {:head   "Pluck"
-                                                :body   "Operator from Re-Streamer Library"
-                                                :footer "2019 Marko Stanimirovic"}))
+(def panel (re-streamer/behavior-stream {:head   "Pluck"
+                                         :body   "Operator from Re-Streamer Library"
+                                         :footer "2019 Marko Stanimirovic"}))
 (def head-and-body (re-streamer/pluck panel [:head :body]))
 
 (println @(:state panel))

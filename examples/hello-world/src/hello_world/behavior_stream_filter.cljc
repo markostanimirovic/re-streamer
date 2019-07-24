@@ -4,7 +4,7 @@
 
 ;; Basic usage of filter operator
 
-(def numbers (re-streamer/create-behavior-stream 0))
+(def numbers (re-streamer/behavior-stream 0))
 (def even-numbers (re-streamer/filter numbers even?))
 
 (subscribe even-numbers #(println (str "Emitted: " %)))

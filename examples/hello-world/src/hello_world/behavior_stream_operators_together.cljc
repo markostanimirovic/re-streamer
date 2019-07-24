@@ -8,7 +8,7 @@
 
 ;; So first, define the initial state and pass it as initial value of behavior stream
 (def init-state {:search "" :data ["Steve Ray Vaughan" "Chuck Berry" "Jimi Hendrix"]})
-(def store (re-streamer/create-behavior-stream init-state))
+(def store (re-streamer/behavior-stream init-state))
 
 ;; Define search subscriber using map, filter and distinct operators
 (def search

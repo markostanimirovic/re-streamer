@@ -4,7 +4,7 @@
 
 ;; Basic usage of filter operator
 
-(def numbers (re-streamer/create-stream 100))
+(def numbers (re-streamer/stream 100))
 (def positive-numbers (re-streamer/filter numbers #(< 0 %)))
 
 (subscribe positive-numbers #(println %))
