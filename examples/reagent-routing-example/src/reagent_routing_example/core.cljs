@@ -20,16 +20,16 @@
 
 (defmulti current-page #(-> %))
 
-(defmethod current-page "#home" [_]
+(defmethod current-page "#/home" [_]
   home-page)
-(defmethod current-page "#about" [_]
+(defmethod current-page "#/about" [_]
   about-page)
 (defmethod current-page :default [_]
   home-page)
 
 (def init-route {:route (.. js/window -location -hash)
                  :page  (current-page (.. js/window -location -hash))})
-(def router (re-streamer/create-behavior-stream init-route))
+(def router (re-streamer/behavior-stream init-route))
 (def router-outlet (re-streamer/map router :page))
 
 (subscribe router #(set! (.. js/window -location -hash) (:route %)))
@@ -43,8 +43,8 @@
 (defn app []
   [:div
    [:h2 "App Header"]
-   [:button {:on-click #(navigate "#home")} "Home"]
-   [:button {:on-click #(navigate "#about")} "About"]
+   [:button {:on-click #(navigate "#/home")} "Home"]
+   [:button {:on-click #(navigate "#/about")} "About"]
    [:br]
    [@(:state router-outlet)]
    [:small "App Footer"]])
