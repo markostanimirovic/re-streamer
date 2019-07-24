@@ -11,7 +11,7 @@
 
 (defn fruits-facade-factory []
   (let [initial-state {:search "" :fruits []}
-        store (re-streamer/create-behavior-stream initial-state)
+        store (re-streamer/behavior-stream initial-state)
         fruits (re-streamer/map store :fruits)
         search (-> store
                    (re-streamer/map :search)
