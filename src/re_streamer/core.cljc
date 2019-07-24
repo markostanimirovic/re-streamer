@@ -92,8 +92,8 @@
 
 ;; === Stream Factories ===
 
-(defn create-stream
-  ([] (create-stream nil))
+(defn stream
+  ([] (stream nil))
   ([val] (let [subs (atom #{})
                state #?(:cljs    (reagent/atom val)
                         :default (atom val))]
@@ -102,8 +102,8 @@
 
            (->Stream subs state))))
 
-(defn create-behavior-stream
-  ([] (create-behavior-stream nil))
+(defn behavior-stream
+  ([] (behavior-stream nil))
   ([val]
    (let [subs (atom #{})
          state #?(:cljs    (reagent/atom val)
@@ -125,20 +125,20 @@
 
 (derive BehaviorFilteredSubscriber ::behavior-subscriber)
 
-(defmulti create-subscriber (fn [stream _ _ _] (type stream)))
+(defmulti subscriber (fn [stream _ _ _] (type stream)))
 
-(defmethod create-subscriber ::subscriber [stream watcher-key subs state]
+(defmethod subscriber ::subscriber [stream watcher-key subs state]
   (->Subscriber subs state {:state (:state stream) :watcher-key watcher-key}))
 
-(defmethod create-subscriber ::behavior-subscriber [stream watcher-key subs state]
+(defmethod subscriber ::behavior-subscriber [stream watcher-key subs state]
   (->BehaviorSubscriber subs state {:state (:state stream) :watcher-key watcher-key}))
 
-(defmulti create-filtered-subscriber (fn [stream _ _ _ _] (type stream)))
+(defmulti filtered-subscriber (fn [stream _ _ _ _] (type stream)))
 
-(defmethod create-filtered-subscriber ::subscriber [stream _ watcher-key subs state]
-  (create-subscriber stream watcher-key subs state))
+(defmethod filtered-subscriber ::subscriber [stream _ watcher-key subs state]
+  (subscriber stream watcher-key subs state))
 
-(defmethod create-filtered-subscriber ::behavior-subscriber [stream filter watcher-key subs state]
+(defmethod filtered-subscriber ::behavior-subscriber [stream filter watcher-key subs state]
   (->BehaviorFilteredSubscriber subs state {:state (:state stream) :watcher-key watcher-key} filter))
 
 ;; === Watcher Keys Generator ===
@@ -160,7 +160,7 @@
      (add-watch (:state stream) watcher-key #(reset! state (f %4)))
      (add-watch state :watch #(doseq [sub @subs] (sub %4)))
 
-     (create-subscriber stream watcher-key subs state))))
+     (subscriber stream watcher-key subs state))))
 
 (defn pluck
   ([stream keys]
@@ -179,7 +179,7 @@
      (add-watch (:state stream) watcher-key #(if (not (f @state %4)) (reset! state %4)))
      (add-watch state :watch #(doseq [sub @subs] (sub %4)))
 
-     (create-subscriber stream watcher-key subs state))))
+     (subscriber stream watcher-key subs state))))
 
 (defn filter
   ([stream f]
@@ -192,4 +192,4 @@
      (add-watch (:state stream) watcher-key #(if (f %4) (reset! state %4)))
      (add-watch state :watch #(doseq [sub @subs] (sub %4)))
 
-     (create-filtered-subscriber stream f watcher-key subs state))))
+     (filtered-subscriber stream f watcher-key subs state))))
