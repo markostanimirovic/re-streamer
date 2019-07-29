@@ -1,6 +1,6 @@
 (ns re-streamer.core
-  #?(:cljs (:require [reagent.core :as reagent]))
-  (:refer-clojure :rename {map c-map distinct c-distinct filter c-filter flush c-flush}))
+  #?(:cljs (:require [reagent.core :as r]))
+  (:refer-clojure :exclude [map distinct filter flush]))
 
 ;; === Types ===
 
@@ -95,7 +95,7 @@
 (defn stream
   ([] (stream nil))
   ([val] (let [subs (atom #{})
-               state #?(:cljs    (reagent/atom val)
+               state #?(:cljs    (r/atom val)
                         :default (atom val))]
 
            (add-watch state :state-watcher #(doseq [sub @subs] (sub %4)))
@@ -106,7 +106,7 @@
   ([] (behavior-stream nil))
   ([val]
    (let [subs (atom #{})
-         state #?(:cljs    (reagent/atom val)
+         state #?(:cljs    (r/atom val)
                   :default (atom val))]
 
      (add-watch state :state-watcher #(doseq [sub @subs] (sub %4)))
@@ -153,7 +153,7 @@
   ([stream f]
    (map stream f (watcher-key)))
   ([stream f watcher-key]
-   (let [state #?(:cljs    (reagent/atom (f @(:state stream)))
+   (let [state #?(:cljs    (r/atom (f @(:state stream)))
                   :default (atom (f @(:state stream))))
          subs (atom #{})]
 
@@ -172,7 +172,7 @@
   ([stream f]
    (distinct stream f (watcher-key)))
   ([stream f watcher-key]
-   (let [state #?(:cljs    (reagent/atom @(:state stream))
+   (let [state #?(:cljs    (r/atom @(:state stream))
                   :default (atom @(:state stream)))
          subs (atom #{})]
 
@@ -185,7 +185,7 @@
   ([stream f]
    (filter stream f (watcher-key)))
   ([stream f watcher-key]
-   (let [state #?(:cljs    (reagent/atom (if (f @(:state stream)) @(:state stream) nil))
+   (let [state #?(:cljs    (r/atom (if (f @(:state stream)) @(:state stream) nil))
                   :default (atom (if (f @(:state stream)) @(:state stream) nil)))
          subs (atom #{})]
 
