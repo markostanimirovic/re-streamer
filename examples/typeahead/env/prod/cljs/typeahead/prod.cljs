@@ -1,6 +1,6 @@
-(ns reagent-example.prod
+(ns typeahead.prod
   (:require
-    [reagent-example.core :as core]))
+    [typeahead.core :as core]))
 
 ;;ignore println statements in prod
 (set! *print-fn* (fn [& _]))

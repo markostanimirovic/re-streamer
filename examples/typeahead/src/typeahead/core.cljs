@@ -1,4 +1,4 @@
-(ns reagent-example.core
+(ns typeahead.core
   (:require [clojure.string :refer [includes?]]
             [reagent.core :as r]
             [re-streamer.core :as re-streamer :refer [subscribe unsubscribe destroy emit flush]])

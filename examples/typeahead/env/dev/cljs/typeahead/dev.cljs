@@ -1,6 +1,6 @@
-(ns ^:figwheel-no-load reagent-example.dev
+(ns ^:figwheel-no-load typeahead.dev
   (:require
-    [reagent-example.core :as core]
+    [typeahead.core :as core]
     [devtools.core :as devtools]))
 
 (extend-protocol IPrintWithWriter
