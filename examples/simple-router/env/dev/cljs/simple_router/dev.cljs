@@ -1,6 +1,6 @@
-(ns ^:figwheel-no-load reagent-routing-example.dev
+(ns ^:figwheel-no-load simple-router.dev
   (:require
-    [reagent-routing-example.core :as core]
+    [simple-router.core :as core]
     [devtools.core :as devtools]))
 
 (extend-protocol IPrintWithWriter

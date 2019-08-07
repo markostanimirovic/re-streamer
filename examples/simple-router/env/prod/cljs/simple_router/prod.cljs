@@ -1,6 +1,6 @@
-(ns reagent-routing-example.prod
+(ns simple-router.prod
   (:require
-    [reagent-routing-example.core :as core]))
+    [simple-router.core :as core]))
 
 ;;ignore println statements in prod
 (set! *print-fn* (fn [& _]))

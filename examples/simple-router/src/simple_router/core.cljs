@@ -1,4 +1,4 @@
-(ns reagent-routing-example.core
+(ns simple-router.core
   (:require
     [reagent.core :as r]
     [re-streamer.core :as re-streamer :refer [subscribe unsubscribe destroy emit flush]])
