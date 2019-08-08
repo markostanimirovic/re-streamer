@@ -26,12 +26,12 @@
   (let [facade (fruits-facade)
         fruits (:fruits facade)
         update-search (:update-search facade)]
-    (r/create-class {:reagent-render (fn []
-                                       [:div
-                                        [:h3 "Search Fruits"]
-                                        [:input {:on-change #(update-search (.. % -target -value))}]
-                                        [:ul (for [fruit @fruits]
-                                               ^{:key fruit} [:li fruit])]])})))
+    (fn []
+      [:div
+       [:h3 "Search Fruits"]
+       [:input {:on-change #(update-search (.. % -target -value))}]
+       [:ul (for [fruit @fruits]
+              ^{:key fruit} [:li fruit])]])))
 
 (defn mount-root []
   (r/render [fruits-container] (.getElementById js/document "app")))
