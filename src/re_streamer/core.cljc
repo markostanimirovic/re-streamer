@@ -198,12 +198,14 @@
   ([stream n]
    (skip stream n (watcher-key)))
   ([stream n watcher-key]
-   (let [emits-count (atom (if (isa? (type stream) ::behavior-subscriber) 1 0))
-         state #?(:cljs    (r/atom (if (>= 0 n) @(:state stream) nil))
-                  :default (atom (if (>= 0 n) @(:state stream) nil)))
-         subs (atom #{})]
-     (add-watch (:state stream) watcher-key #(do (swap! emits-count inc)
-                                                 (if (< n @emits-count) (reset! state %4))))
-     (add-watch state :watch #(doseq [sub @subs] (sub %4)))
+   (if (>= 0 n)
+     stream
+     (let [emits-count (atom (if (isa? (type stream) ::behavior-subscriber) 1 0))
+           state #?(:cljs    (r/atom nil)
+                    :default (atom nil))
+           subs (atom #{})]
+       (add-watch (:state stream) watcher-key #(do (swap! emits-count inc)
+                                                   (if (< n @emits-count) (reset! state %4))))
+       (add-watch state :watch #(doseq [sub @subs] (sub %4)))
 
-     (filtered-subscriber stream (fn [_] (< n @emits-count)) watcher-key subs state))))
+       (filtered-subscriber stream (fn [_] (< n @emits-count)) watcher-key subs state)))))
