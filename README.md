@@ -28,7 +28,94 @@ To use Re-Streamer in your Leiningen project, add following dependency in `proje
 
 ## Examples
 
+Core Re-Streamer functionalities will be explained through the examples below.
+For more details, check [examples](https://github.com/stanimirovic/re-streamer/tree/master/examples) directory.
+
 ### Stream
+
+`stream` is a major type of this library. Let's dive deep into it through the simple example.
+First, we need to create the fruits stream.
+
+```clojure
+(ns example.stream
+  (:require [re-streamer.core :as re-streamer :refer [subscribe unsubscribe destroy emit flush]])
+  (:refer-clojure :rename {flush c-flush}))
+
+(def fruits (re-streamer/stream))  
+```
+
+However, we can pass the initial state's value to the stream. If we don't pass it, initial state will be `nil`.
+Now, let's subscribe to our fruits stream in order to listen to the state changes.
+
+```clojure
+(def fruits-sub (subscribe fruits #(println (str "Fruits: " %))))
+```
+
+`subscribe` accepts the stream as an first argument, and subscriber function as second.
+Next step is to emit a value to the stream.
+
+```clojure
+(emit fruits "Apple")
+```
+
+We emit the string `Apple`, and do you see something in the console?
+Printed value in the console will be:
+
+```
+Fruits: Apple
+```
+
+because our subscriber function prints that value. Also, we can add multiple subscriptions to our stream.
+Let's add one more and emit new fruit.
+
+```clojure
+(def fruits2-sub (subscribe fruits #(println (str "Fruits 2: " %))))
+(emit fruits "Orange")
+```
+
+Now, both subscriber functions will be executed and in the console will be printed:
+
+```
+Fruits: Orange
+Fruits 2: Orange
+```
+
+In every moment, we can get a current state of our stream.
+
+```clojure
+(println @(:state fruits))
+```
+
+Of course, `Orange` will be printed.
+
+In case we no longer need first `fruits2-sub`, we can call `unsubscribe` function to remove it.
+
+```clojure
+(unsubscribe fruits fruits2-sub)
+```
+
+Let's emit a new value again.
+
+```clojure
+(emit fruits "Banana")
+```
+
+Now, in the console only `Fruits: Banana` will be printed, because as stated before, second subscription is
+removed from `fruits` subscriptions list.
+
+Lastly, it is necessary to mention `flush` and `destroy` functions. If we want to remove all subscription,
+`flush` function is for that purpose.
+
+```clojure
+(flush fruits)
+```
+
+When `flush` is called, all subscriptions were removed, but the stream is still alive.
+In case we want to destroy the stream, `destroy` function is the right choice.
+
+```clojure
+(destroy fruits)
+```
 
 ### Behavior Stream
 
@@ -43,8 +130,6 @@ To use Re-Streamer in your Leiningen project, add following dependency in `proje
 #### Filter
 
 #### Skip
-
-For more details, check [examples](https://github.com/stanimirovic/re-streamer/tree/master/examples) directory.
 
 ## License
 
