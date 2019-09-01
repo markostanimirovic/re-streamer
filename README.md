@@ -15,6 +15,11 @@ When `behavior-stream` is subscribed, its current state is emitted immediately t
 `behavior-stream` is used as a `store` in Re-Action framework. More details about Re-Action, you can find
 [here](https://github.com/stanimirovic/re-action).
 
+Re-Streamer provides following operators: `map`, `pluck`, `distinct`, `filter` and `skip`.
+They are used for streams transformation and returns special type of stream called `subscriber`.
+You can subscribe or get state from `subscriber`, but can't emit values to it directly. 
+It listens to the parent (transformed) stream changes, and emits a value when new value is emitted to the parent stream.
+
 ## Usage
 
 To use Re-Streamer in your Leiningen project, add following dependency in `project.clj`:
@@ -23,7 +28,23 @@ To use Re-Streamer in your Leiningen project, add following dependency in `proje
 
 ## Examples
 
-Check examples directory.
+### Stream
+
+### Behavior Stream
+
+### Operators
+
+#### Map
+
+#### Pluck
+
+#### Distinct
+
+#### Filter
+
+#### Skip
+
+For more details, check [examples](https://github.com/stanimirovic/re-streamer/tree/master/examples) directory.
 
 ## License
 
