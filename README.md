@@ -2,9 +2,22 @@
 
 Clojure and ClojureScript Library for Reactive Programming
 
+## Description
+
+If you come from Java/JavaScript world, and you are RxJava/RxJS fan, this library will be your cup of tea.
+However, if you like Clojure and reactive programming, Re-Streamer will make it much easier.
+
+Major reactive entity in Re-Streamer library is a stream. There are two types of stream.
+First, called `stream` is a base type. You can create it, emit values and subscribe in order to listen
+to its state changes. Second is called `behavior-stream`. It has one difference to the base `stream`.
+When `behavior-stream` is subscribed, its current state is emitted immediately to the subscriber function.
+
+`behavior-stream` is used as a `store` in Re-Action framework. More details about Re-Action, you can find
+[here](https://github.com/stanimirovic/re-action).
+
 ## Usage
 
-To use Re-Streamer in your Leiningen project, add this dependency in project.clj:
+To use Re-Streamer in your Leiningen project, add following dependency in `project.clj`:
 
 [![Clojars Project](https://img.shields.io/clojars/v/org.clojars.stanimirovic/re-streamer.svg)](https://clojars.org/org.clojars.stanimirovic/re-streamer)
 
