@@ -10,13 +10,13 @@ However, if you like Clojure and reactive programming, Re-Streamer will make it 
 Major reactive entity in Re-Streamer library is a stream. There are two types of stream.
 First, called `stream` is a base type. You can create it, emit values and subscribe in order to listen
 to its state changes. Second is called `behavior-stream`. It has one difference to the base `stream`.
-When `behavior-stream` is subscribed, its current state is emitted immediately to the subscriber function.
+When `behavior-stream` is subscribed, its current state is emitted immediately to the new subscription.
 
 `behavior-stream` is used as a `store` in Re-Action framework. More details about Re-Action, you can find
 [here](https://github.com/stanimirovic/re-action).
 
 Re-Streamer provides following operators: `map`, `pluck`, `distinct`, `filter` and `skip`.
-They are used for streams transformation and returns special type of stream called `subscriber`.
+They are used for streams transformation and return special type of stream called `subscriber`.
 You can subscribe or get state from `subscriber`, but can't emit values to it directly. 
 It listens to the parent (transformed) stream changes, and emits a value when new value is emitted to the parent stream.
 
@@ -33,7 +33,7 @@ For more details, check [examples](https://github.com/stanimirovic/re-streamer/t
 
 ### Stream
 
-`stream` is a major type of this library. Let's dive deep into it through the simple example.
+`stream` is a major type of this library. Let's dive deep into it through the example.
 First, we need to create the fruits stream.
 
 ```clojure
@@ -51,8 +51,8 @@ Now, let's subscribe to our fruits stream in order to listen to the state change
 (def fruits-sub (subscribe fruits #(println (str "Fruits: " %))))
 ```
 
-`subscribe` accepts the stream as an first argument, and subscriber function as second.
-Next step is to emit a value to the stream.
+`subscribe` accepts the stream as an first argument, and a function that will be executed with stream's new emitted
+value. Next step is to emit a value to the stream.
 
 ```clojure
 (emit fruits "Apple")
@@ -65,7 +65,7 @@ Printed value in the console will be:
 Fruits: Apple
 ```
 
-because our subscriber function prints that value. Also, we can add multiple subscriptions to our stream.
+because our subscription prints that value. Also, we can add multiple subscriptions to our stream.
 Let's add one more and emit new fruit.
 
 ```clojure
@@ -73,7 +73,7 @@ Let's add one more and emit new fruit.
 (emit fruits "Orange")
 ```
 
-Now, both subscriber functions will be executed and in the console will be printed:
+Now, both subscriptions will be executed and in the console will be printed:
 
 ```
 Fruits: Orange
@@ -100,7 +100,7 @@ Let's emit a new value again.
 (emit fruits "Banana")
 ```
 
-Now, in the console only `Fruits: Banana` will be printed, because as stated before, second subscription is
+In the console only `Fruits: Banana` will be printed, because as stated before, second subscription is
 removed from `fruits` subscriptions list.
 
 Lastly, it is necessary to mention `flush` and `destroy` functions. If we want to remove all subscription,
@@ -118,6 +118,48 @@ In case we want to destroy the stream, `destroy` function is the right choice.
 ```
 
 ### Behavior Stream
+
+As already stated, `behavior-stream` is very similar to `stream`.
+When `stream` is subscribed, new subscription will be executed when the new state is emitted to that stream.
+On the other hand, when `behavior-stream` is subscribed, new subscription will be executed immediately with
+the current state. Further behavior of `stream` and `behavior-stream` will be the same.
+When `behavior-stream` is subscribed, its current state is emitted immediately to the new subscription.
+
+Let's now walk through the example.
+
+```clojure
+(ns example.behavior-stream
+  (:require [re-streamer.core :as re-streamer :refer [subscribe emit]]))
+
+(def number (re-streamer/behavior-stream 10))
+```
+
+First we need to create new `behavior-stream` called `number` with initial value `10`. Let's now subscribe to it.
+
+```clojure
+(def number-sub (subscribe number #(println (str "Incremented number: " (inc %)))))
+```
+
+In the console, immediately will be printed:
+
+```
+Incremented number: 11
+```
+
+Next, we will emit a new number.
+
+```clojure
+(emit number 100)
+```
+
+As you can guess, printed value in the console will be:
+
+```
+Incremented number: 101
+```
+
+Of course, you can use `unsubscribe`, `flush` and `destroy` functions and they will have the same behavior
+as when used with `stream`.
 
 ### Operators
 
