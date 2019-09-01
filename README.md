@@ -134,7 +134,9 @@ Let's now walk through the example.
 (def number (re-streamer/behavior-stream 10))
 ```
 
-First we need to create new `behavior-stream` called `number` with initial value `10`. Let's now subscribe to it.
+First we need to create new `behavior-stream` called `number` with initial value `10`.
+As in the case of `stream`, if we don't pass the initial value, it will be `nil`.
+Let's now subscribe to it.
 
 ```clojure
 (def number-sub (subscribe number #(println (str "Incremented number: " (inc %)))))
