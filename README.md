@@ -7,17 +7,17 @@ Clojure and ClojureScript Library for Reactive Programming
 If you come from Java/JavaScript world, and you are RxJava/RxJS fan, this library will be your cup of tea.
 However, if you like Clojure and reactive programming, Re-Streamer will make it much easier.
 
-Major reactive entity in Re-Streamer library is a stream. There are two types of stream.
-First, called `stream` is a base type. You can create it, emit values and subscribe in order to listen
+Major reactive entity in Re-Streamer library is a stream. There are two types of streams.
+Firstly, we have `stream` which is a base type. You can create it, emit values and subscribe in order to listen
 to its state changes. Second is called `behavior-stream`. It has one difference to the base `stream`.
 When `behavior-stream` is subscribed, its current state is emitted immediately to the new subscription.
 
-`behavior-stream` is used as a `store` in Re-Action framework. More details about Re-Action, you can find
+`behavior-stream` is used as a `store` in Re-Action framework. You can find more details about Re-Action
 [here](https://github.com/stanimirovic/re-action).
 
 Re-Streamer provides following operators: `map`, `pluck`, `distinct`, `filter` and `skip`.
-They are used for streams transformation and return special type of stream called `subscriber`.
-You can subscribe or get state from `subscriber`, but can't emit values to it directly. 
+They are used for stream transformation and they return a special kind of stream called `subscriber`.
+You can subscribe or get state from `subscriber`, but you can't emit values to it directly. 
 It listens to the parent (transformed) stream changes, and emits a value when new value is emitted to the parent stream.
 
 ## Usage
@@ -33,7 +33,7 @@ For more details, check [examples](https://github.com/stanimirovic/re-streamer/t
 
 ### Stream
 
-`stream` is a major type of this library. Let's dive deep into it through the example.
+`stream` is a major part of this library. Let's dive deep into it through the example.
 First, we need to create the fruits stream.
 
 ```clojure
@@ -51,7 +51,7 @@ Now, let's subscribe to our fruits stream in order to listen to the state change
 (def fruits-sub (subscribe fruits #(println (str "Fruits: " %))))
 ```
 
-`subscribe` accepts the stream as an first argument, and a function that will be executed with stream's new emitted
+`subscribe` accepts the stream as a first argument, and a function that will be executed with stream's new emitted
 value. Next step is to emit a value to the stream.
 
 ```clojure
@@ -80,7 +80,7 @@ Fruits: Orange
 Fruits 2: Orange
 ```
 
-In every moment, we can get a current state of our stream.
+At every moment, we can get the current state of our stream.
 
 ```clojure
 (println @(:state fruits))
@@ -103,14 +103,14 @@ Let's emit a new value again.
 In the console only `Fruits: Banana` will be printed, because as stated before, second subscription is
 removed from `fruits` subscriptions list.
 
-Lastly, it is necessary to mention `flush` and `destroy` functions. If we want to remove all subscription,
-`flush` function is for that purpose.
+Lastly, it is necessary to mention `flush` and `destroy` functions.
+We can use `flush` function if we want to remove all subscriptions.
 
 ```clojure
 (flush fruits)
 ```
 
-When `flush` is called, all subscriptions were removed, but the stream is still alive.
+When `flush` is called, all subscriptions are removed, but the stream is still alive.
 In case we want to destroy the stream, `destroy` function is the right choice.
 
 ```clojure
@@ -135,7 +135,7 @@ Let's now walk through the example.
 ```
 
 First we need to create new `behavior-stream` called `number` with initial value `10`.
-As in the case of `stream`, if we don't pass the initial value, it will be `nil`.
+As in the case with `stream`, if we don't pass the initial value, it will be `nil`.
 Let's now subscribe to it.
 
 ```clojure
