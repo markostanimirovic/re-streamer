@@ -167,13 +167,23 @@ as when used with `stream`.
 
 #### Map
 
+![Map Operator](https://github.com/stanimirovic/re-streamer/blob/master/resources/img/map-operator.png)
+
 #### Pluck
+
+![Pluck Operator](https://github.com/stanimirovic/re-streamer/blob/master/resources/img/pluck-operator.png)
 
 #### Distinct
 
+![Distinct Operator](https://github.com/stanimirovic/re-streamer/blob/master/resources/img/distinct-operator.png)
+
 #### Filter
 
+![Filter Operator](https://github.com/stanimirovic/re-streamer/blob/master/resources/img/filter-operator.png)
+
 #### Skip
+
+![Skip Operator](https://github.com/stanimirovic/re-streamer/blob/master/resources/img/skip-operator.png)
 
 ## License
 
