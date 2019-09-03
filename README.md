@@ -175,9 +175,18 @@ Transformer is usually a function, but it can also be data depending on the oper
 
 #### Map
 
+`map` operator applies a given transformer to each emitted value of input stream.
+Transformer is a function that accepts stream's state as an argument and returns transformed state.
+Example of using `map` operator is shown in following image:
+
 ![Map Operator](https://github.com/stanimirovic/re-streamer/blob/master/resources/img/map-operator.png)
 
 #### Pluck
+
+`pluck` is a special case of `map` operator. It can be used only if the state of input stream is a hash map.
+It accepts the vector of keys as a second argument (transformer).
+New state is a hash map that contains only the given keys from the input stream state.
+Example of using `pluck` operator is shown in following image:
 
 ![Pluck Operator](https://github.com/stanimirovic/re-streamer/blob/master/resources/img/pluck-operator.png)
 
