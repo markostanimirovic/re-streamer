@@ -7,6 +7,10 @@ Clojure and ClojureScript Library for Reactive Programming
 If you come from Java/JavaScript world, and you are RxJava/RxJS fan, this library will be your cup of tea.
 However, if you like Clojure and reactive programming, Re-Streamer will make it much easier.
 
+Re-Streamer can be used in Clojure as well as in ClojureScript. Also, Re-Streamer has integration with
+[Reagent](https://github.com/reagent-project/reagent) and when it is used in ClojureScript,
+the state of the stream is stored in the Reagent atom.
+
 Major reactive entity in Re-Streamer library is a stream. There are two types of streams.
 Firstly, we have `stream` which is a base type. You can create it, emit values and subscribe in order to listen
 to its state changes. Second is called `behavior-stream`. It has one difference to the base `stream`.
@@ -139,7 +143,7 @@ As in the case with `stream`, if we don't pass the initial value, it will be `ni
 Let's now subscribe to it.
 
 ```clojure
-(def number-sub (subscribe number #(println (str "Incremented number: " (inc %)))))
+(subscribe number #(println (str "Incremented number: " (inc %))))
 ```
 
 In the console, immediately will be printed:
@@ -164,6 +168,10 @@ Of course, you can use `unsubscribe`, `flush` and `destroy` functions and they w
 as when used with `stream`.
 
 ### Operators
+
+Re-Streamer provides `map`, `pluck`, `distinct`, `filter` and `skip` operators.
+Every operator accepts the stream as a first argument. Second argument is the stream transformer.
+Transformer is usually a function, but it can also be data depending on the operator.
 
 #### Map
 
