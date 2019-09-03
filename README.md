@@ -213,6 +213,57 @@ Example of using `skip` operator is shown in following image:
 
 ![Skip Operator](https://github.com/stanimirovic/re-streamer/blob/master/resources/img/skip-operator.png)
 
+#### Put It All Together
+
+Let's define `behavior-stream` called `number` with initial state `2`.
+
+```clojure
+(ns example.operators
+   (:require [re-streamer.core :as re-streamer :refer [subscribe emit]]))
+   
+(def number (re-streamer/behavior-stream 2))
+```
+
+After that, let's create a new one called `distinct-even-number`, and subscribe to it.
+
+```clojure
+(def distinct-even-number
+  (-> number
+      (re-streamer/filter even?)
+      (re-streamer/distinct =)
+      (re-streamer/skip 1)))
+
+(subscribe distinct-even-number #(println (str "Distinct even number: " %)))
+```
+
+There are no printed values in the console after subscription, even though the initial state is an even number,
+because first emitted value is skipped. Let's now emit a new even number.
+
+```clojure
+(emit number 4)
+```
+
+Printed value in the console will be:
+
+```
+Distinct even number: 4
+```
+
+Let's emit `4` again.
+
+```clojure
+(emit number 4)
+```
+
+There are no printed values in the console because distinct operator is used and old state is the same
+as the new one. Let's emit an odd number, to be sure that `filter` operator works.
+
+```clojure
+(emit number 3)
+```
+
+Of course, there are no printed values in the console.
+
 ## License
 
 Copyright © 2019 Marko Stanimirovic
