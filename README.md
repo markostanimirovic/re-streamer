@@ -185,20 +185,31 @@ Example of using `map` operator is shown in following image:
 
 `pluck` is a special case of `map` operator. It can be used only if the state of input stream is a hash map.
 It accepts the vector of keys as a second argument (transformer).
-New state is a hash map that contains only the given keys from the input stream state.
+New state is a hash map that contains only the given keys from the state of input stream.
 Example of using `pluck` operator is shown in following image:
 
 ![Pluck Operator](https://github.com/stanimirovic/re-streamer/blob/master/resources/img/pluck-operator.png)
 
 #### Distinct
 
+`distinct` operator emits a new state only if that state is distinct by comparison from the old state.
+Comparison is defined by transformer function that accepts old and new state as input arguments.
+Example of using `distinct` operator is shown in following image:
+
 ![Distinct Operator](https://github.com/stanimirovic/re-streamer/blob/master/resources/img/distinct-operator.png)
 
 #### Filter
 
+`filter` operator emits a new state only if that state satisfies the condition specified by the transformer function
+that accepts the new state as an input argument. Example of using `filter` operator is shown in following image:
+
 ![Filter Operator](https://github.com/stanimirovic/re-streamer/blob/master/resources/img/filter-operator.png)
 
 #### Skip
+
+`skip` operator skips the first `n` emitted states from the input stream.
+`n` is passed as a second argument of `skip` function.
+Example of using `skip` operator is shown in following image:
 
 ![Skip Operator](https://github.com/stanimirovic/re-streamer/blob/master/resources/img/skip-operator.png)
 
